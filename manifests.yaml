@@ -1,0 +1,117 @@
+# --- Backend Deployment (Go API) ---
+# Crée 2 pods pour le serveur backend Go
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capi-backend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capi-backend
+  template:
+    metadata:
+      labels:
+        app: capi-backend
+    spec:
+      containers:
+      - name: backend
+        # !! ATTENTION: Remplacez par le nom de VOTRE image !!
+        image: smartdeploy/capimgr-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080 # Port sur lequel Go écoute
+
+---
+# --- Backend Service ---
+# Crée un service interne pour que le frontend (via l'Ingress)
+# puisse trouver les pods du backend.
+apiVersion: v1
+kind: Service
+metadata:
+  name: capi-backend-service
+spec:
+  selector:
+    app: capi-backend
+  ports:
+  - protocol: TCP
+    port: 80 # Le service écoute sur le port 80
+    targetPort: 8080 # Et redirige vers le port 8080 des pods
+
+---
+# --- Frontend Deployment (React + Nginx) ---
+# Crée 2 pods pour le serveur frontend Nginx
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capi-frontend-deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: capi-frontend
+  template:
+    metadata:
+      labels:
+        app: capi-frontend
+    spec:
+      containers:
+      - name: frontend
+        # !! ATTENTION: Remplacez par le nom de VOTRE image !!
+        image: smartdeploy/capimgr-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80 # Port sur lequel Nginx écoute
+
+---
+# --- Frontend Service ---
+# Crée un service interne pour que l'Ingress
+# puisse trouver les pods du frontend.
+apiVersion: v1
+kind: Service
+metadata:
+  name: capi-frontend-service
+spec:
+  selector:
+    app: capi-frontend
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+# --- Ingress (Porte d'entrée) ---
+# Gère tout le trafic entrant et le route.
+# C'est ici que la magie opère.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: capi-ingress
+  annotations:
+    # (Optionnel) Assurez-vous d'utiliser la bonne classe d'Ingress
+    # pour votre cluster (ex: "nginx", "gce", "alb")
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - host: capi.k8s.dive-in-it.com
+    http:
+      paths:
+      # Règle 1: Tout ce qui commence par /api
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            # est routé vers le service backend
+            name: capi-backend-service
+            port:
+              number: 80
+      
+      # Règle 2: Tout le reste (le /)
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            # est routé vers le service frontend
+            name: capi-frontend-service
+            port:
+              number: 80
