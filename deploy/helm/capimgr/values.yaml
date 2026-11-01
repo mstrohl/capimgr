@@ -1,0 +1,46 @@
+# Registry et tag partagés par toutes les images
+image:
+  registry: 192.168.1.9:5000
+  tag: latest
+  pullPolicy: Always
+
+backend:
+  repository: capimgr-backend
+  replicas: 1
+  resources: {}
+
+frontend:
+  repository: capimgr-frontend
+  replicas: 1
+  resources: {}
+
+# Image des Jobs clusterctl (installation/désinstallation de providers).
+# clusterctlImage (image complète) prime sur <registry>/<clusterctl.repository>:<tag>
+clusterctl:
+  repository: capimgr-clusterctl
+clusterctlImage: ""
+
+service:
+  type: ClusterIP
+  port: 80
+  # Utilisé si service.type=NodePort
+  nodePort: null
+
+ingress:
+  enabled: false
+  className: nginx
+  host: capimgr.local
+
+# ConfigMap clusterctl optionnel : clusterctl connaît déjà les providers officiels,
+# les versions sont découvertes dynamiquement via GitHub. À activer uniquement pour
+# déclarer des providers personnalisés (éditer files/clusterctl.yaml).
+clusterctlConfig:
+  enabled: false
+
+# Token GitHub optionnel (évite la limite de 60 requêtes/h de l'API publique), utilisé par le
+# backend ET les Jobs clusterctl via un Secret. Ne pas committer : préférer --set githubToken=...
+# ou référencer un Secret existant (clé "token") avec githubTokenSecret.
+githubTokenSecret: ""
+
+rbac:
+  create: true

@@ -1,0 +1,851 @@
+openapi: 3.0.0
+info:
+  title: Cluster API Manager (capimgr) API
+  description: >
+    API REST complète pour capimgr (Cluster API Manager).
+    Permet la gestion dynamique des providers CAPI, le cycle de vie des clusters enfants
+    et l'introspection des CRDs pour la génération de formulaires dynamiques.
+  version: "1.1.0"
+servers:
+  - url: /api
+    description: API capimgr
+
+tags:
+  - name: Providers
+    description: Découverte, installation, configuration et désinstallation des providers CAPI.
+  - name: Jobs
+    description: Supervision des Jobs Kubernetes d'exécution clusterctl et flux de logs.
+  - name: CRDs & Schemas
+    description: Introspection des CustomResourceDefinitions et schémas OpenAPI v3 pour formulaires dynamiques.
+  - name: Clusters
+    description: Gestion du cycle de vie des clusters enfants (création, santé, scaling, suppression).
+  - name: Cluster Access
+    description: Récupération du Kubeconfig et connectivité aux clusters enfants.
+
+paths:
+  # =========================================================================
+  # PROVIDERS
+  # =========================================================================
+  /providers:
+    get:
+      summary: Liste tous les providers disponibles
+      description: Fusionne le catalogue, la configuration clusterctl et les CRDs détectées sur le cluster.
+      tags:
+        - Providers
+      responses:
+        '200':
+          description: Liste des providers avec statut d'installation et versions.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Provider'
+        '500':
+          description: Erreur lors de la lecture des providers ou CRDs.
+
+    post:
+      summary: Ajoute manuellement un provider au catalogue
+      description: Permet de référencer un provider CAPI tiers ou privé.
+      tags:
+        - Providers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProviderPayload'
+      responses:
+        '201':
+          description: Provider ajouté au catalogue.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Provider'
+        '400':
+          description: Requête invalide.
+
+  /providers/{id}:
+    delete:
+      summary: Désinstalle un provider via un Job Kubernetes
+      description: Déclenche un Job asynchrone exécutant 'clusterctl delete'.
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identifiant du provider (ex. aws, azure, proxmox).
+          schema:
+            type: string
+        - name: includeCRD
+          in: query
+          required: false
+          description: Si true, supprime également les CRDs associées.
+          schema:
+            type: boolean
+            default: false
+      responses:
+        '202':
+          description: Désinstallation initiée.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatusResponse'
+        '404':
+          description: Provider inconnu.
+
+  /providers/{id}/install:
+    post:
+      summary: Installe un provider via un Job Kubernetes
+      description: Déclenche un Job asynchrone exécutant 'clusterctl init'.
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Identifiant du provider à installer.
+          schema:
+            type: string
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InstallProviderPayload'
+      responses:
+        '202':
+          description: Installation initiée.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobStatusResponse'
+        '400':
+          description: Version invalide (format attendu v1.2.3).
+        '404':
+          description: Provider inconnu.
+        '409':
+          description: Provider archivé, installation impossible.
+
+  /providers/{id}/versions:
+    get:
+      summary: Liste dynamiquement les versions d'un provider
+      description: Releases du dépôt GitHub du provider (cache 30 min) et statut du dépôt.
+      tags:
+        - Providers
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Versions disponibles, de la plus récente à la plus ancienne.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderVersions'
+        '404':
+          description: Provider inconnu de clusterctl.
+
+  /clusterctl/providers:
+    get:
+      summary: Liste les dépôts de providers connus de clusterctl
+      tags:
+        - Providers
+      responses:
+        '200':
+          description: Table de correspondance des repositories clusterctl.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+                  properties:
+                    url:
+                      type: string
+                    version:
+                      type: string
+
+  # =========================================================================
+  # JOBS & LOGS
+  # =========================================================================
+  /jobs/{id}/status:
+    get:
+      summary: Consulte le statut d'un Job d'installation ou désinstallation
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Nom du Job K8s (ex. install-aws-1710000000)
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Statut détaillé du Job.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobDetail'
+        '404':
+          description: Job non trouvé.
+
+  /jobs/{id}/logs:
+    get:
+      summary: Récupère les logs d'exécution du Pod rattaché au Job
+      tags:
+        - Jobs
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Nom du Job K8s
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Flux textuel des logs du Pod.
+          content:
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Pod du Job non trouvé.
+
+  # =========================================================================
+  # CRDS & SCHEMAS (FORMULAIRES DYNAMIQUES)
+  # =========================================================================
+  /crds:
+    get:
+      summary: Liste les CRDs disponibles sur le cluster
+      description: Utilisé pour découvrir les types configurables mis à disposition par les providers.
+      tags:
+        - CRDs & Schemas
+      parameters:
+        - name: provider
+          in: query
+          required: false
+          description: Filtre par nom ou identifiant de provider (ex. aws, vsphere).
+          schema:
+            type: string
+        - name: group
+          in: query
+          required: false
+          description: Filtre par API group (ex. infrastructure.cluster.x-k8s.io).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste des CRDs enregistrées.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CRDItem'
+
+  /crds/{name}/schema:
+    get:
+      summary: Extrait le JSON Schema OpenAPI v3 pour une CRD donnée
+      description: Retourne le sous-schéma 'spec' nettoyé et enrichi, directement consommable par le générateur de formulaires dynamique.
+      tags:
+        - CRDs & Schemas
+      parameters:
+        - name: name
+          in: path
+          required: true
+          description: Nom complet de la CRD (ex. awsclusters.infrastructure.cluster.x-k8s.io)
+          schema:
+            type: string
+        - name: version
+          in: query
+          required: false
+          description: Version de la ressource (si omis, la version stockée par défaut est utilisée).
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Schéma JSON prêt pour le formulaire dynamique.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CRDSchemaResponse'
+        '404':
+          description: CRD introuvable.
+
+  # =========================================================================
+  # CLUSTERS
+  # =========================================================================
+  /clusters:
+    get:
+      summary: Liste tous les clusters CAPI
+      description: Liste l'ensemble des clusters enfants avec état global, version et résumé des nœuds.
+      tags:
+        - Clusters
+      responses:
+        '200':
+          description: Liste des clusters.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Cluster'
+
+    post:
+      summary: Crée un nouveau cluster enfant à partir de manifests
+      description: Crée le namespace `capi-<name>` puis les manifests fournis (ressources `*.cluster.x-k8s.io` uniquement, le `Cluster` en dernier). Annulation complète en cas d'échec. Payload `{name, kubernetesVersion, manifests[]}` ; les manifests s'obtiennent via `GET /clusters/blueprint`.
+      tags:
+        - Clusters
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClusterPayload'
+      responses:
+        '201':
+          description: Cluster créé avec succès.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cluster'
+        '400':
+          description: Paramètres ou manifests invalides.
+        '422':
+          description: Manifest rejeté par l'API Kubernetes (création annulée).
+
+  /clusters/blueprint:
+    get:
+      summary: Manifests à fournir pour créer un cluster
+      description: Déduit des CRDs installées les manifests obligatoires (préremplis) et optionnels pour les providers choisis.
+      tags:
+        - Clusters
+      parameters:
+        - {name: name, in: query, required: true, schema: {type: string}}
+        - {name: kubernetesVersion, in: query, required: true, schema: {type: string}}
+        - {name: infrastructureProvider, in: query, required: true, schema: {type: string}}
+        - {name: controlPlaneProvider, in: query, required: true, schema: {type: string}}
+        - {name: bootstrapProvider, in: query, required: true, schema: {type: string}}
+        - {name: controlPlaneReplicas, in: query, schema: {type: integer, default: 3}}
+        - {name: workerReplicas, in: query, schema: {type: integer, default: 3}}
+      responses:
+        '200':
+          description: "`{namespace, required[], optional[]}` ; chaque descripteur contient id, title, crdName, group, kind, version, object."
+        '400':
+          description: Paramètres invalides.
+        '409':
+          description: CRDs du provider absentes (provider non installé).
+
+  /clusters/{id}:
+    get:
+      summary: Obtient les détails complets d'un cluster enfant
+      description: Inclut les conditions de santé CAPI, les références d'infrastructure et les métadonnées.
+      tags:
+        - Clusters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Détails du cluster.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClusterDetail'
+        '404':
+          description: Cluster introuvable.
+
+    delete:
+      summary: Supprime un cluster enfant
+      description: Lance la suppression ordonnée du cluster et de toutes ses machines associées.
+      tags:
+        - Clusters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Suppression initiée avec succès.
+        '404':
+          description: Cluster introuvable.
+
+  /clusters/{id}/manifests:
+    get:
+      summary: Consulte les ressources CAPI actuelles liées au cluster
+      description: Ressources namespacées reliées par label, propriétaire, spec.clusterName ou référence explicite. Les résultats peuvent être incomplets ; les erreurs de lecture sont retournées dans warnings.
+      tags:
+        - Clusters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Objets Kubernetes et éventuels avertissements.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [manifests, warnings]
+                properties:
+                  manifests:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+                  warnings:
+                    type: array
+                    items:
+                      type: string
+        '404':
+          description: Cluster introuvable.
+        '500':
+          description: Lecture du cluster ou des CRD impossible.
+
+  /clusters/{id}/machines:
+    get:
+      summary: Liste les machines et déploiements de machines du cluster
+      tags:
+        - Clusters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Liste des machines du cluster.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MachineItem'
+
+  /clusters/{id}/scale:
+    patch:
+      summary: Ajuste le nombre de répliques des pools de nœuds workers
+      tags:
+        - Clusters
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaleClusterPayload'
+      responses:
+        '200':
+          description: Répliques mises à jour.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  workerReplicas:
+                    type: integer
+
+  # =========================================================================
+  # CLUSTER ACCESS (KUBECONFIG)
+  # =========================================================================
+  /clusters/{id}/kubeconfig:
+    get:
+      summary: Télécharge ou affiche le fichier Kubeconfig du cluster enfant
+      tags:
+        - Cluster Access
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: UID Kubernetes du cluster.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Kubeconfig du cluster enfant.
+          headers:
+            Content-Disposition:
+              description: Nom de fichier proposé pour le téléchargement du kubeconfig.
+              schema:
+                type: string
+              example: attachment; filename="mon-cluster.kubeconfig"
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KubeconfigResponse'
+            text/plain:
+              schema:
+                type: string
+        '404':
+          description: Cluster ou secret kubeconfig non trouvé.
+        '409':
+          description: Le control plane n'est pas encore prêt, kubeconfig indisponible.
+
+# =============================================================================
+# SCHEMAS
+# =============================================================================
+components:
+  schemas:
+    Provider:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "aws"
+        name:
+          type: string
+          example: "AWS"
+        category:
+          type: string
+          enum: [infrastructure, controlplane, bootstrap, core]
+          example: "infrastructure"
+        version:
+          type: string
+          example: "v2.4.0"
+        repositoryURL:
+          type: string
+          example: "https://github.com/kubernetes-sigs/cluster-api-provider-aws/releases/v2.4.0/infrastructure-components.yaml"
+        installed:
+          type: boolean
+          example: true
+        status:
+          type: string
+          enum: [active, archived, unknown]
+          description: "archived : dépôt archivé ou supprimé (provider grisé, non installable)."
+          example: "active"
+        crds:
+          type: array
+          items:
+            type: string
+          example: ["awsclusters.infrastructure.cluster.x-k8s.io", "awsmachinetemplates.infrastructure.cluster.x-k8s.io"]
+
+    ProviderVersions:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [active, archived, unknown]
+        default:
+          type: string
+          description: Dernière version stable.
+          example: "v2.4.0"
+        versions:
+          type: array
+          items:
+            type: object
+            properties:
+              version:
+                type: string
+                example: "v2.4.0"
+              prerelease:
+                type: boolean
+              publishedAt:
+                type: string
+                format: date-time
+
+    CreateProviderPayload:
+      type: object
+      required:
+        - name
+        - category
+      properties:
+        name:
+          type: string
+          example: "Proxmox"
+        category:
+          type: string
+          enum: [infrastructure, controlplane, bootstrap, core]
+          example: "infrastructure"
+        version:
+          type: string
+          example: "v0.6.0"
+        repositoryURL:
+          type: string
+          example: "https://github.com/kubernetes-sigs/cluster-api-provider-proxmox/releases/download/v0.6.0/infrastructure-components.yaml"
+
+    InstallProviderPayload:
+      type: object
+      properties:
+        version:
+          type: string
+          description: Version optionnelle à installer (ex. 'v2.4.0').
+          example: "v2.4.0"
+
+    JobStatusResponse:
+      type: object
+      properties:
+        message:
+          type: string
+          example: "Installation du provider initiée."
+        jobName:
+          type: string
+          example: "install-aws-1710000000"
+
+    JobDetail:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "install-aws-1710000000"
+        status:
+          type: string
+          enum: [Pending, Running, Succeeded, Failed]
+          example: "Running"
+        startTime:
+          type: string
+          format: date-time
+        completionTime:
+          type: string
+          format: date-time
+        podName:
+          type: string
+          example: "install-aws-1710000000-abcde"
+
+    CRDItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "awsclusters.infrastructure.cluster.x-k8s.io"
+        kind:
+          type: string
+          example: "AWSCluster"
+        group:
+          type: string
+          example: "infrastructure.cluster.x-k8s.io"
+        version:
+          type: string
+          example: "v1beta2"
+        scope:
+          type: string
+          example: "Namespaced"
+        provider:
+          type: string
+          example: "aws"
+
+    CRDSchemaResponse:
+      type: object
+      properties:
+        crdName:
+          type: string
+          example: "awsclusters.infrastructure.cluster.x-k8s.io"
+        kind:
+          type: string
+          example: "AWSCluster"
+        apiVersion:
+          type: string
+          example: "infrastructure.cluster.x-k8s.io/v1beta2"
+        schema:
+          type: object
+          description: Sous-schéma 'spec' au format JSON Schema conforme OpenAPI v3.
+          example:
+            type: "object"
+            required: ["region"]
+            properties:
+              region:
+                type: "string"
+                description: "AWS Region for deployment"
+                default: "eu-west-3"
+              sshKeyName:
+                type: "string"
+                description: "Name of the SSH key pair"
+
+    Cluster:
+      type: object
+      properties:
+        id:
+          type: string
+          description: UID Kubernetes du cluster.
+          example: "a1b2c3d4-e5f6-7890-a1b2-c3d4e5f67890"
+        name:
+          type: string
+          example: "prod-cluster-paris"
+        namespace:
+          type: string
+          example: "capi-prod-cluster-paris"
+        kubernetesVersion:
+          type: string
+          example: "v1.30.0"
+        status:
+          type: string
+          example: "Provisioned"
+        nodes:
+          type: integer
+          example: 5
+        controlPlaneReady:
+          type: boolean
+          example: true
+        infrastructureReady:
+          type: boolean
+          example: true
+        infrastructureProvider:
+          type: string
+          example: "AWSCluster"
+        controlPlaneProvider:
+          type: string
+          example: "KubeadmControlPlane"
+        bootstrapProvider:
+          type: string
+          example: "KubeadmConfig"
+
+    ClusterDetail:
+      allOf:
+        - $ref: '#/components/schemas/Cluster'
+        - type: object
+          properties:
+            conditions:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    example: "Ready"
+                  status:
+                    type: string
+                    example: "True"
+                  reason:
+                    type: string
+                  message:
+                    type: string
+                  lastTransitionTime:
+                    type: string
+                    format: date-time
+            controlPlaneRef:
+              type: object
+              description: Référence CAPI vers la ressource de control plane.
+            infrastructureRef:
+              type: object
+              description: Référence CAPI vers la ressource d'infrastructure.
+            machineDeployments:
+              type: array
+              items:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  replicas:
+                    type: integer
+                  readyReplicas:
+                    type: integer
+
+    CreateClusterPayload:
+      type: object
+      required:
+        - name
+        - kubernetesVersion
+        - infrastructureProvider
+      properties:
+        name:
+          type: string
+          example: "mon-cluster"
+        kubernetesVersion:
+          type: string
+          example: "v1.30.0"
+        infrastructureProvider:
+          type: string
+          example: "aws"
+        controlPlaneProvider:
+          type: string
+          default: "kubeadm"
+          example: "kubeadm"
+        bootstrapProvider:
+          type: string
+          default: "kubeadm-bootstrap"
+          example: "kubeadm-bootstrap"
+        controlPlaneReplicas:
+          type: integer
+          default: 3
+          example: 3
+        workerReplicas:
+          type: integer
+          default: 3
+          example: 3
+        infrastructureSpec:
+          type: object
+          description: Données de configuration pour la CRD du provider d'infrastructure issues du formulaire dynamique.
+
+    ScaleClusterPayload:
+      type: object
+      required:
+        - workerReplicas
+      properties:
+        workerReplicas:
+          type: integer
+          minimum: 0
+          maximum: 500
+          example: 5
+
+    MachineItem:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "prod-cluster-paris-md-0-7859b"
+        role:
+          type: string
+          enum: [control-plane, worker]
+          example: "worker"
+        phase:
+          type: string
+          example: "Running"
+        version:
+          type: string
+          example: "v1.30.0"
+        ipAddress:
+          type: string
+          example: "10.0.4.15"
+        internalIP:
+          type: string
+          example: "10.0.4.15"
+        externalIP:
+          type: string
+          example: "203.0.113.15"
+        providerID:
+          type: string
+          example: "aws:///eu-west-3a/i-0123456789abcdef"
+        creationTimestamp:
+          type: string
+          format: date-time
+
+    KubeconfigResponse:
+      type: object
+      properties:
+        clusterName:
+          type: string
+          example: "prod-cluster-paris"
+        serverEndpoint:
+          type: string
+          example: "https://prod-cluster-paris-api.example.com:6443"
+        rawKubeconfig:
+          type: string
+          description: Contenu textuel complet du kubeconfig YAML.

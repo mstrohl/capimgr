@@ -1,0 +1,10 @@
+{{- if .Values.clusterctlConfig.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clusterctl-config
+  namespace: {{ .Release.Namespace }}
+data:
+  clusterctl.yaml: |
+{{ .Files.Get "files/clusterctl.yaml" | indent 4 }}
+{{- end }}

@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capimgr-backend
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: capimgr-backend
+  template:
+    metadata:
+      labels:
+        app: capimgr-backend
+    spec:
+      serviceAccountName: capi-dashboard-sa
+      containers:
+      - name: backend
+        image: {{ include "capimgr.backendImage" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: CLUSTERCTL_IMAGE
+          value: {{ include "capimgr.jobImage" . | quote }}
+        {{- if or .Values.githubToken .Values.githubTokenSecret }}
+        - name: GITHUB_TOKEN_SECRET
+          value: {{ include "capimgr.githubSecret" . | quote }}
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ include "capimgr.githubSecret" . }}
+              key: token
+        {{- end }}
+        ports:
+        - containerPort: 8080
+        readinessProbe:
+          tcpSocket:
+            port: 8080
+        {{- with .Values.backend.resources }}
+        resources: {{- toYaml . | nindent 10 }}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capimgr-backend
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: capimgr-backend
+  ports:
+  - port: 80
+    targetPort: 8080

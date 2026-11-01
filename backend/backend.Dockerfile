@@ -1,39 +1,21 @@
-# --- Étape 1: Build (Construction) ---
-# Utilise une image Golang pour compiler l'application
 FROM golang:1.22-alpine AS builder
-
-# Définir le répertoire de travail
 WORKDIR /app
-
-# Copier les fichiers de modules Go
-# (Vous devez avoir un go.mod ; exécutez 'go mod init mon-backend' si ce n'est pas fait)
-COPY go.mod go.sum* ./
-
-# Télécharger les dépendances
+COPY go.mod go.sum ./
 RUN go mod download
-
-# Copier le code source
-COPY *.go .
-
-# Compiler l'application
-# -o /app/server : Spécifie le binaire de sortie
-# CGO_ENABLED=0 : Désactive CGO pour une compilation statique
-# -ldflags="-w -s" : Réduit la taille du binaire
+COPY *.go ./
 RUN CGO_ENABLED=0 go build -ldflags="-w -s" -o /app/server .
 
-# --- Étape 2: Run (Exécution) ---
-# Utilise une image Alpine minimale pour l'exécution
-FROM alpine:3.18
-
-# Définir le répertoire de travail
+FROM alpine:3.20
+ARG TARGETARCH=amd64
+ARG CLUSTERCTL_VERSION=v1.11.3
 WORKDIR /app
-
-# Copier le binaire compilé depuis l'étape "builder"
+RUN apk --no-cache add curl ca-certificates && \
+    curl -fsSL -o /usr/local/bin/clusterctl \
+      "https://github.com/kubernetes-sigs/cluster-api/releases/download/${CLUSTERCTL_VERSION}/clusterctl-linux-${TARGETARCH}" && \
+    chmod +x /usr/local/bin/clusterctl && \
+    apk del curl
 COPY --from=builder /app/server .
-
-# Exposer le port 8080 (sur lequel le serveur Go écoute)
+COPY openapi.yaml .
+COPY swagger-ui ./swagger-ui
 EXPOSE 8080
-
-# Commande pour exécuter le serveur
-# (Utilisation de /app/server au lieu de ./server pour un chemin absolu)
 CMD ["/app/server"]

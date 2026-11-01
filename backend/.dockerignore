@@ -1,0 +1,5 @@
+capimgr
+server
+swagger-ui/*.map
+swagger-ui/swagger-ui-es-*
+swagger-ui/swagger-ui.js

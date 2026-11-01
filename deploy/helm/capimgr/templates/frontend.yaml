@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: capimgr-frontend
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: capimgr-frontend
+  template:
+    metadata:
+      labels:
+        app: capimgr-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: {{ include "capimgr.frontendImage" . }}
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        env:
+        - name: BACKEND_URL
+          value: http://capimgr-backend.{{ .Release.Namespace }}.svc.cluster.local:80
+        ports:
+        - containerPort: 80
+        {{- with .Values.frontend.resources }}
+        resources: {{- toYaml . | nindent 10 }}
+        {{- end }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: capimgr-frontend
+  namespace: {{ .Release.Namespace }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: capimgr-frontend
+  ports:
+  - port: {{ .Values.service.port }}
+    targetPort: 80
+    {{- if and (eq .Values.service.type "NodePort") .Values.service.nodePort }}
+    nodePort: {{ .Values.service.nodePort }}
+    {{- end }}
