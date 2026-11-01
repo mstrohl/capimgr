@@ -1,0 +1,5 @@
+/swagger-ui
+backend/capimgr
+backend/server
+node_modules/
+*.log

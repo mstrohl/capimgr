@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from 'react';
 
 // --- Icônes SVG pour les fournisseurs (Providers) ---
-// Ces icônes sont utilisées pour rendre l'interface plus professionnelle.
-
 const AWSIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto">
-    <path d="M11.996 15.228a3.155 3.155 0 01-1.04-.182 4.07 4.07 0 01-.976-.506c-.3-.21-.57-.45-.806-.72l.466.673c.18.26.33.528.45.804.12.277.18.561.18.852a2.38 2.38 0 01-.39 1.28c-.24.38-.57.69-.97.91-.4.22-.85.33-1.35.33-.57 0-1.08-.13-1.54-.4-.46-.27-.83-.63-1.12-1.08-.29-.45-.43-.98-.43-1.58 0-.6.15-1.13.44-1.6.29-.47.68-.86 1.16-1.18.49-.32 1.05-.5 1.69-.5.43 0 .83.07 1.2.2.37.13.7.3 1.01.5l-1.63-3.92-3.87-.01.9 2.15c.16.4.24.8.24 1.21 0 .5-.12.94-.36 1.32a2.4 2.4 0 01-1 .92c-.42.21-.9.31-1.44.31-.6 0-1.14-.13-1.61-.4-.47-.27-.86-.63-1.16-1.09-.3-.46-.45-.99-.45-1.6 0-.6.15-1.14.44-1.62.29-.48.68-.88 1.17-1.19.49-.31 1.05-.47 1.69-.47.45 0 .88.08 1.28.24.4.16.77.38 1.1.68l-1.18 2.82c-.1.24-.15.48-.15.73 0 .34.07.63.2.88.13.25.3.45.52.62.22.17.47.25.76.25.32 0 .6-.09.83-.28.23-.19.4-.42.52-.72l1.62-3.88h3.33L11.996 15.228zM21.05 15.1c0 .64-.15 1.2-.46 1.67-.3.47-.7.86-1.18 1.17-.48.31-1.03.47-1.64.47-.62 0-1.17-.16-1.65-.47-.48-.31-.88-.7-1.18-1.17-.3-.47-.46-1.03-.46-1.67 0-.65.15-1.2.46-1.67.3-.47.7-.86 1.18-1.17.48-.31 1.03-.47 1.65-.47.61 0 1.16.16 1.64.47.48.31.87.7 1.18 1.17.3.47.46 1.02.46 1.67zm-2.14 0c0-.36-.06-.68-.19-.97a1.6 1.6 0 00-.53-.69c-.23-.16-.5-.24-.8-.24s-.57.08-.8.24c-.23.16-.42.38-.53.69-.13.29-.19.61-.19.97s.06.68.19.97c.11.29.3.51.53.69.23.16.5.24.8.24s.57-.08.8-.24c.23-.16.42-.38.53-.69.13-.29.19-.61.19-.97z" fill="#FF9900"/>
-    <path d="M19.34 6.68c-.3-.27-.64-.49-.99-.67-.36-.18-.74-.32-1.14-.42-.4-.1-.8-.14-1.22-.14-.7 0-1.34.13-1.92.4-.58.27-1.08.62-1.5 1.06-.42.44-.75.95-1 1.52-.25.57-.37 1.18-.37 1.83 0 .7.13 1.34.4 1.92.27.58.62 1.08 1.06 1.5.44.42.95.75 1.52 1 .57.25 1.18.37 1.83.37.5 0 .99-.08 1.45-.25.47-.17.9-.39 1.3-.67l.34.5c-.4.3-.85.55-1.33.74-.48.19-1 .33-1.53.41-.53.08-1.07.12-1.62.12-.9 0-1.74-.15-2.52-.46-.78-.31-1.46-.73-2.04-1.27s-1.03-1.18-1.37-1.91c-.34-.73-.51-1.51-.51-2.34 0-.85.17-1.64.52-2.38.35-.74.8-1.39 1.37-1.94.57-.55 1.25-1 2.04-1.34.79-.34 1.63-.51 2.52-.51.5 0 1 .05 1.5.14.5.09.98.23 1.44.42l-.4.6z" fill="#232F3E"/>
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mx-auto">
+    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9v-2h2v2zm0-4H9V7h2v5z" fill="#FF9900"/>
+    <circle cx="12" cy="12" r="9" stroke="#FF9900" strokeWidth="2"/>
   </svg>
 );
 
 const AzureIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto">
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mx-auto">
     <path d="M5.62 6.71l6.13 11.85 3.32-5.35-6.1-11.84-3.35 5.34z" fill="#0078D4"/>
     <path d="M12.27 19.29l6.1-11.84-3.34-5.34-6.13 11.85 3.37 5.33z" fill="#0078D4"/>
     <path d="M5.62 6.71l-2.34-.73 8.47 13.31 2.39.73L5.62 6.71z" fill="#50E6FF"/>
@@ -19,201 +17,301 @@ const AzureIcon = () => (
 );
 
 const GCPIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-16 h-16 mx-auto">
-    <path d="M12.001 9.87c.21 0 .42.02.62.05 1.24.2 2.3.7 3.2 1.48 1.05.9 1.74 2.1 1.95 3.44.09.5.13 1.01.13 1.52 0 .6-.06 1.19-.18 1.77h-5.74c.02-1.04.53-1.98 1.32-2.61.6-.47 1.34-.76 2.14-.84-.2-.58-.52-1.1-.94-1.53-.42-.42-.93-.75-1.5-1v-.28z" fill="#FBBC05"/>
-    <path d="M11.99 18.1c-1.78 0-3.36-.6-4.6-1.65-.96-.78-1.68-1.77-2.07-2.9-.27-.78-.4-1.6-.4-2.45 0-1.18.23-2.3.66-3.32.5-.9 1.16-1.7 1.96-2.35.79-.65 1.7-1.16 2.7-1.5.85-.3 1.75-.46 2.65-.46.9 0 1.78.15 2.6.45.83.3 1.58.73 2.24 1.28l-1.92 1.92c-.38-.3-.82-.54-1.3-.72-.48-.18-.98-.27-1.5-.27-.8 0-1.54.2-2.18.58-.64.38-1.16.9-1.52 1.55-.37.65-.55 1.4-.55 2.25 0 .8.18 1.55.54 2.2s.87 1.18 1.5 1.58c.64.4 1.36.6 2.15.6.5 0 1-.08 1.45-.25.46-.17.88-.42 1.26-.75l1.9 1.9c-.7.63-1.5 1.13-2.38 1.5-2.04.88-4.2.9-6.26.04z" fill="#EA4335"/>
-    <path d="M21.1 12.18c0-1.02-.1-2.02-.28-3H12v3.7h5.1c-.2.78-.6 1.45-1.15 2l1.9 1.9c1.08-1 1.84-2.38 2.25-4.02z" fill="#4285F4"/>
-    <path d="M12.001 9.87v3.7l5.1-.02c-.2.78-.6 1.45-1.15 2l1.9 1.9c1.08-1 1.84-2.38 2.25-4.02.08-.3.14-.6.18-.9v-2.68h-8.28z" fill="#4285F4"/>
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mx-auto">
+    <circle cx="12" cy="12" r="9" stroke="#4285F4" strokeWidth="2"/>
+    <path d="M12 7v5l3 3" stroke="#EA4335" strokeWidth="2" strokeLinecap="round"/>
+  </svg>
+);
+
+const DockerIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-12 h-12 mx-auto">
+    <path d="M22 13.5c-.5-.3-1.4-.4-2-.2-.3-.8-1-1.3-2-1.3-.2 0-.4 0-.6.1-.5-1.2-1.7-2.1-3.2-2.1H14V8h2V6h-2V4h-2v2h-2V4H8v2H6v2h2v2H3c-.6 0-1 .4-1 1 0 4.4 3.6 8 8 8h6c3.9 0 7-3.1 7-7 0-.5-.4-.9-1-.5z" fill="#2496ED"/>
   </svg>
 );
 
 const KubernetesIcon = () => (
-  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#326CE5"/>
-    <path d="M12 4.1C7.64 4.1 4.1 7.64 4.1 12s3.54 7.9 7.9 7.9 7.9-3.54 7.9-7.9-3.54-7.9-7.9-7.9zm0 14.2c-3.47 0-6.3-2.83-6.3-6.3s2.83-6.3 6.3-6.3 6.3 2.83 6.3 6.3-2.83 6.3-6.3 6.3z" fill="#326CE5"/>
-    <path d="M12 10.5l-3.5 2 3.5 2 3.5-2-3.5-2zm-4.5 2.5L12 15.5l4.5-2.5L12 10.5 7.5 13z" fill="#326CE5"/>
-    <path d="M12 6l-5 3v6l5 3 5-3V9l-5-3zm-3.5 3.75L12 11.5l3.5-1.75L12 8l-3.5 1.75zm0 3.5L12 15l3.5-1.75L12 11.5l-3.5 1.75z" fill="#326CE5"/>
+  <svg className="w-6 h-6 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M12 2L2 7.5v9L12 22l10-5.5v-9L12 2zm0 2.2l7.5 4.1-3 1.6-4.5-2.4-4.5 2.4-3-1.6L12 4.2zm-8 6.4l3 1.6v3.3l-3-1.6v-3.3zm5 4.3v-2.7l3 1.6 3-1.6v2.7l-3 1.6-3-1.6zm8-1v-3.3l3-1.6v3.3l-3 1.6z"/>
   </svg>
 );
 
-// --- Données Mock (simulées) ---
-
-// !! SUPPRIMÉ: Les données MOCK ne sont plus la source de vérité
-// const MOCK_PROVIDERS = [
-//   { id: 'aws', name: 'Amazon Web Services', icon: <AWSIcon />, status: 'installé', version: 'v2.4.1' },
-// ...
-// ];
-
-// const MOCK_CLUSTERS = [
-//   { id: 'prod-eu-1', name: 'prod-cluster-eu-west-1', provider: 'aws', status: 'En cours', k8sVersion: 'v1.29.3', nodes: 52, controlPlane: '3 x m5.xlarge', created: 'Il y a 2 mois' },
-// ...
-// ];
+const ProviderIcon = ({ id }) => {
+  const lower = (id || '').toLowerCase();
+  if (lower.includes('aws')) return <AWSIcon />;
+  if (lower.includes('azure')) return <AzureIcon />;
+  if (lower.includes('gcp') || lower.includes('google')) return <GCPIcon />;
+  if (lower.includes('docker')) return <DockerIcon />;
+  return <KubernetesIcon />;
+};
 
 // --- Composant Toast (Notification) ---
-// Pour simuler les retours d'action sans utiliser 'alert()'
 const Toast = ({ message, type, onClose }) => {
   useEffect(() => {
-    const timer = setTimeout(onClose, 3000);
+    const timer = setTimeout(onClose, 4000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
-  const bgColor = type === 'error' ? 'bg-red-600' : 'bg-green-600';
+  const bgColor = type === 'error' ? 'bg-red-600' : 'bg-emerald-600';
 
   return (
-    <div className={`fixed bottom-5 right-5 ${bgColor} text-white px-6 py-3 rounded-lg shadow-xl animate-bounce`}>
-      {message}
+    <div className={`fixed bottom-5 right-5 ${bgColor} text-white px-6 py-3 rounded-xl shadow-2xl z-50 flex items-center space-x-3 text-sm font-medium animate-fade-in`}>
+      <span>{type === 'error' ? '⚠️' : '✅'}</span>
+      <span>{message}</span>
+      <button onClick={onClose} className="ml-2 hover:opacity-75">✕</button>
     </div>
   );
 };
 
+// --- Composant Modal pour Suivi de Job (Logs & Statut) ---
+const JobModal = ({ jobName, onClose, apiUrl }) => {
+  const [jobStatus, setJobStatus] = useState(null);
+  const [logs, setLogs] = useState('Chargement des logs...');
+
+  useEffect(() => {
+    if (!jobName) return;
+
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/api/jobs/${jobName}/status`);
+        if (res.ok) {
+          const data = await res.json();
+          setJobStatus(data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    const fetchLogs = async () => {
+      try {
+        const res = await fetch(`${apiUrl}/api/jobs/${jobName}/logs`);
+        if (res.ok) {
+          const text = await res.text();
+          setLogs(text || 'Aucun log pour le moment...');
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchStatus();
+    fetchLogs();
+    const interval = setInterval(() => {
+      fetchStatus();
+      fetchLogs();
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [jobName, apiUrl]);
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+      <div className="bg-gray-900 border border-gray-700 rounded-2xl max-w-3xl w-full p-6 text-white shadow-2xl flex flex-col max-h-[85vh]">
+        <div className="flex justify-between items-center pb-4 border-b border-gray-800">
+          <div>
+            <h3 className="text-lg font-bold">Suivi du Job : {jobName}</h3>
+            <p className="text-xs text-gray-400">Statut: <span className="font-semibold text-blue-400">{jobStatus?.status || 'Vérification...'}</span></p>
+          </div>
+          <button onClick={onClose} className="text-gray-400 hover:text-white text-xl">✕</button>
+        </div>
+        <div className="flex-1 my-4 overflow-hidden flex flex-col">
+          <label className="text-xs font-semibold text-gray-400 mb-2">Logs d'exécution clusterctl :</label>
+          <pre className="flex-1 bg-black/80 rounded-xl p-4 font-mono text-xs text-green-400 overflow-y-auto whitespace-pre-wrap leading-relaxed border border-gray-800">
+            {logs}
+          </pre>
+        </div>
+        <div className="flex justify-end pt-2">
+          <button onClick={onClose} className="px-5 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-sm font-medium transition">
+            Fermer
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 // --- Composant Principal de l'Application ---
-
 export default function App() {
-  const [view, setView] = useState('dashboard'); // dashboard, clusters, providers, create
-  const [toast, setToast] = useState(null); // { message, type }
-  
-  // !! MODIFIÉ: Initialiser l'état à vide
+  const [view, setView] = useState('dashboard'); // dashboard, clusters, providers, crds, create
+  const [toast, setToast] = useState(null);
+  const [activeJob, setActiveJob] = useState(null);
+
   const [clusters, setClusters] = useState([]);
   const [providers, setProviders] = useState([]);
+  const [crds, setCrds] = useState([]);
+  const [selectedCRD, setSelectedCRD] = useState(null);
+  const [crdSchema, setCrdSchema] = useState(null);
+  const [loadingSchema, setLoadingSchema] = useState(false);
 
-  // !! AJOUTÉ: URL du Backend
-  const API_URL = 'http://localhost:8080';
+  // Configuration dynamique de l'URL Backend
+  const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8085';
 
-  // !! AJOUTÉ: Fonctions pour appeler l'API
+  const showToast = (message, type = 'success') => setToast({ message, type });
+
   const fetchClusters = async () => {
     try {
       const response = await fetch(`${API_URL}/api/clusters`);
-      if (!response.ok) throw new Error('Erreur lors du chargement des clusters');
-      // S'assurer que c'est un tableau même si data est null (ce que Go peut faire)
-      const data = await response.json();
-      setClusters(data || []); 
+      if (response.ok) {
+        const data = await response.json();
+        setClusters(data || []);
+      }
     } catch (error) {
       console.error(error);
-      showToast(error.message, 'error');
     }
   };
 
   const fetchProviders = async () => {
     try {
       const response = await fetch(`${API_URL}/api/providers`);
-      if (!response.ok) throw new Error('Erreur lors du chargement des providers');
-      const data = await response.json();
-      setProviders(data || []);
+      if (response.ok) {
+        const data = await response.json();
+        setProviders(data || []);
+      }
     } catch (error) {
       console.error(error);
-      showToast(error.message, 'error');
     }
   };
 
-  // !! AJOUTÉ: useEffect pour charger les données au démarrage
+  const fetchCRDs = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/crds`);
+      if (response.ok) {
+        const data = await response.json();
+        setCrds(data || []);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const loadCRDSchema = async (crdName) => {
+    setSelectedCRD(crdName);
+    setLoadingSchema(true);
+    try {
+      const response = await fetch(`${API_URL}/api/crds/${crdName}/schema`);
+      if (response.ok) {
+        const data = await response.json();
+        setCrdSchema(data);
+      } else {
+        showToast(`Impossible de charger le schéma pour ${crdName}`, 'error');
+      }
+    } catch (error) {
+      showToast(error.message, 'error');
+    } finally {
+      setLoadingSchema(false);
+    }
+  };
+
   useEffect(() => {
     fetchClusters();
     fetchProviders();
-  }, []); // Le tableau vide signifie "exécuter une fois au montage"
+    fetchCRDs();
+  }, []);
 
-  const showToast = (message, type = 'success') => {
-    setToast({ message, type });
-  };
-  
-  // !! MODIFIÉ: addCluster pour appeler l'API POST
-  const addCluster = async (newClusterFormData) => {
-    // Le backend attend 'nodes' pour les workerNodes,
-    // et les autres champs du formulaire
-    const payload = {
-        ...newClusterFormData,
-        nodes: newClusterFormData.workerNodes 
-    };
-    
+  const handleInstallProvider = async (providerId, customVersion) => {
     try {
-      const response = await fetch(`${API_URL}/api/clusters`, {
+      const payload = customVersion ? { version: customVersion } : {};
+      const response = await fetch(`${API_URL}/api/providers/${providerId}/install`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
       });
-
-      if (!response.ok) {
-         throw new Error('Échec de la création du cluster');
+      const data = await response.json();
+      if (response.ok) {
+        showToast(`Installation initiée (Job: ${data.jobName})`);
+        setActiveJob(data.jobName);
+        fetchProviders();
+        fetchCRDs();
+      } else {
+        showToast(data.message || 'Erreur lors de l’installation', 'error');
       }
-
-      // const newClusterFromApi = await response.json(); // Le backend renvoie le cluster créé
-
-      showToast('Cluster en cours de création !');
-      setView('clusters');
-      fetchClusters(); // Recharger la liste des clusters depuis le backend
-      
-    } catch (error) {
-      console.error(error);
-      showToast(error.message, 'error');
-    }
-  };
-
-  // !! MODIFIÉ: deleteCluster pour appeler l'API DELETE
-  const deleteCluster = async (clusterId) => {
-    // J'ai gardé le window.confirm de votre code original
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce cluster ? Cette action est irréversible.")) {
-      try {
-        const response = await fetch(`${API_URL}/api/clusters/${clusterId}`, {
-          method: 'DELETE',
-        });
-
-        if (!response.ok) {
-          throw new Error('Échec de la suppression du cluster');
-        }
-        
-        showToast('Cluster marqué pour suppression.');
-        fetchClusters(); // Recharger la liste des clusters depuis le backend
-
-      } catch (error) {
-        console.error(error);
-        showToast(error.message, 'error');
-      }
+    } catch (err) {
+      showToast(err.message, 'error');
     }
   };
 
   const renderView = () => {
     switch (view) {
       case 'dashboard':
-        return <DashboardView clusterCount={clusters.length} nodeCount={clusters.reduce((acc, c) => acc + (c.status !== 'Erreur' ? c.nodes : 0), 0)} providersInstalled={providers.filter(p => p.status === 'installé').length} />;
-      case 'clusters':
-        return <ClusterListView clusters={clusters} onDelete={deleteCluster} onViewDetails={() => showToast('Navigation vers les détails (simulée).')} />;
+        return (
+          <DashboardView 
+            clusterCount={clusters.length} 
+            nodeCount={clusters.reduce((acc, c) => acc + (c.status !== 'Erreur' ? (c.nodes || 0) : 0), 0)} 
+            providersInstalled={providers.filter(p => p.installed).length}
+            totalProviders={providers.length}
+            crdsCount={crds.length}
+            onNavigate={setView}
+          />
+        );
       case 'providers':
-        return <ProviderCatalogView providers={providers} onInstall={() => showToast('Installation du provider (simulée)...')} />;
-      case 'create':
-        return <CreateClusterView providers={providers.filter(p => p.status === 'installé')} onSubmit={addCluster} onCancel={() => setView('clusters')} />;
+        return (
+          <ProviderCatalogView 
+            providers={providers} 
+            onInstall={handleInstallProvider}
+            onRefresh={() => { fetchProviders(); fetchCRDs(); }}
+          />
+        );
+      case 'crds':
+        return (
+          <CRDExplorerView 
+            crds={crds} 
+            selectedCRD={selectedCRD}
+            schemaData={crdSchema}
+            loading={loadingSchema}
+            onSelectCRD={loadCRDSchema}
+          />
+        );
+      case 'clusters':
+        return (
+          <ClusterListView 
+            clusters={clusters} 
+            onDelete={async (id) => {
+              if (window.confirm("Confirmer la suppression du cluster ?")) {
+                await fetch(`${API_URL}/api/clusters/${id}`, { method: 'DELETE' });
+                showToast("Suppression en cours...");
+                fetchClusters();
+              }
+            }} 
+          />
+        );
       default:
-        return <DashboardView />;
+        return <DashboardView clusterCount={clusters.length} nodeCount={0} providersInstalled={0} totalProviders={0} crdsCount={0} onNavigate={setView} />;
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 font-inter">
+    <div className="flex h-screen bg-gray-950 text-gray-100 font-inter">
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-      
-      {/* --- Barre Latérale (Sidebar) --- */}
-      <aside className="w-64 bg-gray-900 text-gray-300 flex flex-col p-4">
-        <div className="flex items-center space-x-2 mb-8 p-2">
-          <KubernetesIcon />
-          <span className="text-xl font-bold text-white">CAPI Dashboard</span>
+      {activeJob && <JobModal jobName={activeJob} apiUrl={API_URL} onClose={() => setActiveJob(null)} />}
+
+      {/* --- Sidebar Navigation --- */}
+      <aside className="w-64 bg-gray-900 border-r border-gray-800 flex flex-col p-5">
+        <div className="flex items-center space-x-3 mb-8 px-2">
+          <div className="p-2 bg-blue-600/20 border border-blue-500/30 rounded-xl">
+            <KubernetesIcon />
+          </div>
+          <div>
+            <h1 className="text-base font-bold text-white tracking-wide">capimgr</h1>
+            <p className="text-xs text-gray-400">Cluster API Manager</p>
+          </div>
         </div>
-        <nav className="flex-1 flex flex-col space-y-2">
+
+        <nav className="flex-1 space-y-1.5">
           <NavItem icon="📊" text="Tableau de bord" active={view === 'dashboard'} onClick={() => setView('dashboard')} />
-          <NavItem icon="🧩" text="Clusters" active={view === 'clusters'} onClick={() => setView('clusters')} />
-          <NavItem icon="📦" text="Catalogue des Providers" active={view === 'providers'} onClick={() => setView('providers')} />
+          <NavItem icon="📦" text="Providers CAPI" count={providers.length} active={view === 'providers'} onClick={() => setView('providers')} />
+          <NavItem icon="🧩" text="CRDs des Providers" count={crds.length} active={view === 'crds'} onClick={() => setView('crds')} />
+          <NavItem icon="☸️" text="Clusters Enfants" count={clusters.length} active={view === 'clusters'} onClick={() => setView('clusters')} />
         </nav>
-        <div className="mt-auto">
-          <button 
-            onClick={() => setView('create')}
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md flex items-center justify-center space-x-2">
-            <span>🚀</span>
-            <span>Créer un Cluster</span>
-          </button>
+
+        <div className="pt-4 border-t border-gray-800 text-xs text-gray-400 flex items-center justify-between">
+          <span className="flex items-center space-x-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span>API: {API_URL}</span>
+          </span>
         </div>
       </aside>
 
-      {/* --- Contenu Principal --- */}
+      {/* --- Main Content Area --- */}
       <main className="flex-1 overflow-y-auto p-8">
         {renderView()}
       </main>
@@ -221,312 +319,363 @@ export default function App() {
   );
 }
 
-// --- Composant de Navigation ---
-const NavItem = ({ icon, text, active, onClick }) => (
+const NavItem = ({ icon, text, count, active, onClick }) => (
   <button
     onClick={onClick}
-    className={`flex items-center space-x-3 p-3 rounded-lg transition duration-200 w-full text-left ${
+    className={`flex items-center justify-between w-full px-4 py-3 rounded-xl transition duration-150 text-sm font-medium ${
       active
-        ? 'bg-blue-600 text-white shadow-lg'
-        : 'hover:bg-gray-800 hover:text-white'
+        ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
+        : 'text-gray-400 hover:bg-gray-800/60 hover:text-gray-200'
     }`}
   >
-    <span className="text-xl">{icon}</span>
-    <span className="font-medium">{text}</span>
+    <div className="flex items-center space-x-3">
+      <span className="text-lg">{icon}</span>
+      <span>{text}</span>
+    </div>
+    {count !== undefined && count > 0 && (
+      <span className={`text-xs px-2 py-0.5 rounded-full ${active ? 'bg-blue-700 text-white' : 'bg-gray-800 text-gray-300'}`}>
+        {count}
+      </span>
+    )}
   </button>
 );
 
-// --- Vue: Tableau de bord ---
-const DashboardView = ({ clusterCount, nodeCount, providersInstalled }) => (
-  <>
-    <h1 className="text-3xl font-bold text-gray-900 mb-6">Tableau de bord</h1>
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      <StatCard title="Clusters Gérés" value={clusterCount} unit="clusters" />
-      <StatCard title="Nœuds Actifs (Total)" value={nodeCount} unit="nœuds" />
-      <StatCard title="Providers Installés" value={providersInstalled} unit="providers" />
+// --- Vue 1: Dashboard ---
+const DashboardView = ({ clusterCount, nodeCount, providersInstalled, totalProviders, crdsCount, onNavigate }) => (
+  <div>
+    <div className="mb-8">
+      <h2 className="text-2xl font-bold text-white tracking-tight">Vue d'ensemble</h2>
+      <p className="text-gray-400 text-sm mt-1">Supervision de votre cluster de management et des composants CAPI</p>
     </div>
-    
-    <div className="mt-10 bg-white p-6 rounded-lg shadow-lg">
-      <h2 className="text-xl font-semibold mb-4">Bienvenue sur votre Dashboard Cluster API</h2>
-      <p className="text-gray-700">
-        Utilisez le menu de gauche pour naviguer, consulter vos clusters existants, 
-        gérer les providers d'infrastructure ou déployer de nouveaux clusters Kubernetes.
-      </p>
-    </div>
-  </>
-);
 
-const StatCard = ({ title, value, unit }) => (
-  <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200">
-    <h3 className="text-sm font-medium text-gray-500 uppercase tracking-wider">{title}</h3>
-    <div className="mt-2 flex items-baseline space-x-2">
-      <span className="text-4xl font-bold text-blue-600">{value}</span>
-      <span className="text-gray-600">{unit}</span>
+    <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <StatCard title="Providers Installés" value={`${providersInstalled} / ${totalProviders}`} subtitle="Actifs sur le cluster" icon="📦" onClick={() => onNavigate('providers')} />
+      <StatCard title="CRDs Introspectées" value={crdsCount} subtitle="Schémas configurables" icon="🧩" onClick={() => onNavigate('crds')} />
+      <StatCard title="Clusters Enfants" value={clusterCount} subtitle="Workload clusters" icon="☸️" onClick={() => onNavigate('clusters')} />
+      <StatCard title="Nœuds Gérés" value={nodeCount} subtitle="Total CP + Workers" icon="🖥️" />
+    </div>
+
+    <div className="bg-gray-900 border border-gray-800 rounded-2xl p-6">
+      <h3 className="text-base font-semibold text-white mb-3">Capacités Actives</h3>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+        <div className="bg-gray-950 p-4 rounded-xl border border-gray-800/80">
+          <div className="text-blue-400 font-semibold mb-1">✓ Découverte Dynamique</div>
+          <p className="text-gray-400 text-xs">Catalogue Cluster API synchronisé avec plus de 40 providers et gestion des versions.</p>
+        </div>
+        <div className="bg-gray-950 p-4 rounded-xl border border-gray-800/80">
+          <div className="text-emerald-400 font-semibold mb-1">✓ Introspection des CRDs</div>
+          <p className="text-gray-400 text-xs">Extraction automatique des schémas OpenAPI v3 pour générer des formulaires à la volée.</p>
+        </div>
+        <div className="bg-gray-950 p-4 rounded-xl border border-gray-800/80">
+          <div className="text-purple-400 font-semibold mb-1">✓ Jobs Asynchrones</div>
+          <p className="text-gray-400 text-xs">Installation et désinstallation non-bloquante via K8s Jobs avec suivi des logs en temps réel.</p>
+        </div>
+      </div>
     </div>
   </div>
 );
 
-// --- Vue: Catalogue des Providers ---
-const ProviderCatalogView = ({ providers, onInstall }) => (
-  <>
-    <h1 className="text-3xl font-bold text-gray-900 mb-6">Catalogue des Providers</h1>
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      {providers.map(p => (
-        <ProviderCard key={p.id} provider={p} onInstall={onInstall} />
-      ))}
+const StatCard = ({ title, value, subtitle, icon, onClick }) => (
+  <div onClick={onClick} className={`bg-gray-900 border border-gray-800 rounded-2xl p-5 hover:border-blue-500/50 transition cursor-pointer`}>
+    <div className="flex items-center justify-between text-gray-400 text-xs font-medium uppercase tracking-wider mb-2">
+      <span>{title}</span>
+      <span className="text-lg">{icon}</span>
     </div>
-  </>
+    <div className="text-3xl font-extrabold text-white">{value}</div>
+    <div className="text-xs text-gray-500 mt-1">{subtitle}</div>
+  </div>
 );
 
-const ProviderCard = ({ provider, onInstall }) => {
-  const getStatusChip = (status) => {
-    switch(status) {
-      case 'installé':
-        return <span className="px-3 py-1 bg-green-200 text-green-800 rounded-full text-xs font-medium">Installé</span>;
-      case 'disponible':
-        return <span className="px-3 py-1 bg-blue-200 text-blue-800 rounded-full text-xs font-medium">Disponible</span>;
-      default:
-        return <span className="px-3 py-1 bg-gray-200 text-gray-800 rounded-full text-xs font-medium">Non-installé</span>;
-    }
-  };
+// --- Vue 2: Catalogue des Providers ---
+const ProviderCatalogView = ({ providers, onInstall, onRefresh }) => {
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [installingProvider, setInstallingProvider] = useState(null);
+  const [customVersion, setCustomVersion] = useState('');
+
+  const categories = [
+    { id: 'all', label: 'Tous' },
+    { id: 'infrastructure', label: 'Infrastructure' },
+    { id: 'controlplane', label: 'Control Plane' },
+    { id: 'bootstrap', label: 'Bootstrap' },
+    { id: 'core', label: 'Core' }
+  ];
+
+  const filtered = providers.filter(p => selectedCategory === 'all' || p.category === selectedCategory);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-200 flex flex-col">
-      <div className="flex-shrink-0 mb-4">{provider.icon}</div>
-      <h2 className="text-xl font-semibold text-gray-900">{provider.name}</h2>
-      <p className="text-gray-500 mb-4">Version: {provider.version}</p>
+    <div>
       <div className="flex justify-between items-center mb-6">
-        {getStatusChip(provider.status)}
-      </div>
-      <button 
-        onClick={() => onInstall(provider.id)}
-        disabled={provider.status === 'installé'}
-        className={`w-full mt-auto px-4 py-2 rounded-lg font-semibold transition duration-200 ${
-          provider.status === 'installé'
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : 'bg-blue-600 text-white hover:bg-blue-700'
-        }`}
-      >
-        {provider.status === 'installé' ? 'Déjà Installé' : 'Installer'}
-      </button>
-    </div>
-  );
-};
-
-// --- Vue: Liste des Clusters ---
-const ClusterListView = ({ clusters, onDelete, onViewDetails }) => (
-  <>
-    <h1 className="text-3xl font-bold text-gray-900 mb-6">Clusters Kubernetes</h1>
-    <div className="bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom du Cluster</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Provider</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Version K8s</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nœuds</th>
-            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {clusters.map(c => <ClusterRow key={c.id} cluster={c} onDelete={onDelete} onViewDetails={onViewDetails} />)}
-        </tbody>
-      </table>
-    </div>
-  </>
-);
-
-const ClusterRow = ({ cluster, onDelete, onViewDetails }) => {
-  const getStatusIndicator = (status) => {
-    switch (status) {
-      case 'En cours':
-        return <span className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>;
-      case 'Provisionnement':
-        return <span className="w-3 h-3 bg-yellow-500 rounded-full animate-pulse"></span>;
-      case 'Erreur':
-        return <span className="w-3 h-3 bg-red-500 rounded-full"></span>;
-      default:
-        return <span className="w-3 h-3 bg-gray-400 rounded-full"></span>;
-    }
-  };
-
-  const providerIcon = (provider) => {
-    if (provider === 'aws') return <AWSIcon />;
-    if (provider === 'azure') return <AzureIcon />;
-    if (provider === 'gcp') return <GCPIcon />;
-    return <KubernetesIcon />;
-  }
-
-  return (
-    <tr>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="font-medium text-gray-900">{cluster.name}</div>
-        <div className="text-sm text-gray-500">Créé: {cluster.created}</div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="flex items-center space-x-2">
-          {getStatusIndicator(cluster.status)}
-          <span className="text-sm font-medium text-gray-800">{cluster.status}</span>
+        <div>
+          <h2 className="text-2xl font-bold text-white tracking-tight">Catalogue des Providers CAPI</h2>
+          <p className="text-gray-400 text-sm mt-1">Gérez l'ensemble des providers supportés et leurs versions</p>
         </div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap">
-        <div className="w-8 h-8 transform scale-75 -ml-2">{providerIcon(cluster.provider)}</div>
-      </td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cluster.k8sVersion}</td>
-      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{cluster.nodes}</td>
-      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2">
-        <button onClick={() => onViewDetails(cluster.id)} className="text-blue-600 hover:text-blue-900">Détails</button>
-        <button onClick={() => onDelete(cluster.id)} className="text-red-600 hover:text-red-900">Supprimer</button>
-      </td>
-    </tr>
-  );
-};
-
-
-// --- Vue: Création de Cluster ---
-const CreateClusterView = ({ providers, onSubmit, onCancel }) => {
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({
-    provider: providers.length > 0 ? providers[0].id : '',
-    name: 'mon-nouveau-cluster',
-    k8sVersion: 'v1.30.0',
-    controlPlaneNodes: 3,
-    controlPlaneType: 'm5.xlarge', // Type par défaut pour AWS (simulé)
-    workerNodes: 3,
-    workerType: 'm5.xlarge',
-  });
-
-  const handleChange = (e) => {
-    const { name, value, type } = e.target;
-    setFormData(prev => ({ ...prev, [name]: type === 'number' ? parseInt(value) : value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSubmit(formData);
-  };
-  
-  const providerTypes = {
-    aws: ['m5.xlarge', 'm5.2xlarge', 't3.medium', 't3.large'],
-    azure: ['Standard_D4s_v3', 'Standard_D8s_v3', 'Standard_B2ms'],
-    gcp: ['n1-standard-2', 'n1-standard-4', 'e2-medium']
-  };
-  
-  const currentInstanceTypes = providerTypes[formData.provider] || [];
-
-  return (
-    <form onSubmit={handleSubmit} className="max-w-2xl mx-auto bg-white p-8 rounded-lg shadow-lg border border-gray-200">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Créer un nouveau Cluster</h1>
-
-      {/* --- Section 1: Configuration Générale --- */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">1. Configuration Générale</h2>
-        
-        <label className="block text-sm font-medium text-gray-700 mb-2">Nom du Cluster</label>
-        <input 
-          type="text" 
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-        />
-
-        <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Provider d'Infrastructure</label>
-        <select 
-          name="provider" 
-          value={formData.provider}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          {providers.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-        </select>
-        
-        <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Version Kubernetes</label>
-        <select 
-          name="k8sVersion" 
-          value={formData.k8sVersion}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option>v1.30.0</option>
-          <option>v1.29.3</option>
-          <option>v1.28.5</option>
-        </select>
-      </section>
-
-      {/* --- Section 2: Control Plane --- */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">2. Control Plane</h2>
-        
-        <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de Nœuds (HA)</label>
-        <select 
-          name="controlPlaneNodes" 
-          value={formData.controlPlaneNodes}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          <option value={1}>1 (Non-HA)</option>
-          <option value={3}>3 (Recommandé)</option>
-          <option value={5}>5</option>
-        </select>
-        
-        <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Type d'Instance</label>
-        <select 
-          name="controlPlaneType" 
-          value={formData.controlPlaneType}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          {currentInstanceTypes.map(type => <option key={type} value={type}>{type}</option>)}
-        </select>
-      </section>
-
-      {/* --- Section 3: Pool de Workers (MachineDeployment) --- */}
-      <section className="mb-8">
-        <h2 className="text-xl font-semibold mb-4 border-b pb-2">3. Pool de Workers (default-pool)</h2>
-        
-        <label className="block text-sm font-medium text-gray-700 mb-2">Nombre de Nœuds (Initial)</label>
-        <input 
-          type="number"
-          name="workerNodes"
-          min="1"
-          max="100"
-          value={formData.workerNodes}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500" 
-        />
-        
-        <label className="block text-sm font-medium text-gray-700 mt-4 mb-2">Type d'Instance</label>
-        <select 
-          name="workerType" 
-          value={formData.workerType}
-          onChange={handleChange}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          {currentInstanceTypes.map(type => <option key={type} value={type}>{type}</option>)}
-        </select>
-        {/* Dans une vraie app, on ajouterait ici l'autoscaling, les labels, taints, etc. */}
-      </section>
-
-      {/* --- Actions --- */}
-      <div className="flex justify-end space-x-4">
-        <button 
-          type="button" 
-          onClick={onCancel}
-          className="px-6 py-2 bg-gray-200 text-gray-800 rounded-lg font-semibold hover:bg-gray-300 transition duration-200"
-        >
-          Annuler
-        </button>
-        <button 
-          type="submit"
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition duration-200 shadow-md"
-        >
-          🚀 Déployer le Cluster
+        <button onClick={onRefresh} className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-xs rounded-xl font-medium transition flex items-center space-x-2">
+          <span>🔄</span>
+          <span>Actualiser</span>
         </button>
       </div>
-    </form>
+
+      {/* Filtres par catégorie */}
+      <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
+        {categories.map(c => (
+          <button
+            key={c.id}
+            onClick={() => setSelectedCategory(c.id)}
+            className={`px-4 py-1.5 rounded-xl text-xs font-semibold transition ${
+              selectedCategory === c.id
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-gray-900 text-gray-400 hover:bg-gray-800'
+            }`}
+          >
+            {c.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Grille des cartes de providers */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {filtered.map(p => (
+          <div key={p.id} className="bg-gray-900 border border-gray-800 rounded-2xl p-5 flex flex-col justify-between hover:border-gray-700 transition">
+            <div>
+              <div className="flex items-start justify-between mb-4">
+                <div className="p-3 bg-gray-950 border border-gray-800 rounded-xl">
+                  <ProviderIcon id={p.id} />
+                </div>
+                <div className="flex flex-col items-end space-y-1">
+                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${
+                    p.installed ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-gray-800 text-gray-400'
+                  }`}>
+                    {p.installed ? '✓ Installé' : 'Disponible'}
+                  </span>
+                  <span className="text-[10px] text-gray-500 uppercase tracking-wider">{p.category}</span>
+                </div>
+              </div>
+
+              <h3 className="text-base font-bold text-white">{p.name}</h3>
+              <p className="text-xs text-gray-400 mt-1">Version: <span className="font-mono text-blue-400 font-semibold">{p.version || 'latest'}</span></p>
+
+              {/* CRDs associées */}
+              {p.crds && p.crds.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-gray-800">
+                  <div className="text-[11px] font-medium text-gray-400 mb-1.5">CRDs actives ({p.crds.length}) :</div>
+                  <div className="flex flex-wrap gap-1">
+                    {p.crds.map(crd => (
+                      <span key={crd} className="text-[10px] bg-gray-800 px-2 py-0.5 rounded text-gray-300 font-mono">
+                        {crd.split('.')[0]}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-5 pt-4 border-t border-gray-800">
+              {p.installed ? (
+                <button disabled className="w-full py-2 bg-emerald-950/40 text-emerald-400 text-xs font-semibold rounded-xl border border-emerald-800/40 cursor-default">
+                  ✓ Composant Opérationnel
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    setInstallingProvider(p);
+                    setCustomVersion(p.version || '');
+                  }}
+                  className="w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition shadow-md shadow-blue-600/20"
+                >
+                  Installer ce Provider
+                </button>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Modal d'installation avec sélection de version */}
+      {installingProvider && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 border border-gray-700 rounded-2xl max-w-md w-full p-6 text-white shadow-2xl">
+            <h3 className="text-lg font-bold mb-1">Installer {installingProvider.name}</h3>
+            <p className="text-xs text-gray-400 mb-4">Un Job Kubernetes exécutera `clusterctl init` pour déployer ce provider.</p>
+
+            <label className="block text-xs font-semibold text-gray-300 mb-1">Version cible :</label>
+            <input 
+              type="text"
+              value={customVersion}
+              onChange={(e) => setCustomVersion(e.target.value)}
+              placeholder="ex: v2.4.0 (ou laisser vide pour version par défaut)"
+              className="w-full bg-gray-950 border border-gray-700 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-5"
+            />
+
+            <div className="flex justify-end space-x-3">
+              <button 
+                onClick={() => setInstallingProvider(null)}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-xl text-xs font-medium transition"
+              >
+                Annuler
+              </button>
+              <button 
+                onClick={() => {
+                  const id = installingProvider.id;
+                  setInstallingProvider(null);
+                  onInstall(id, customVersion);
+                }}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-xl text-xs font-medium transition font-semibold"
+              >
+                Lancer l'installation
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
+// --- Vue 3: Explorateur de CRDs & Schémas Dynamiques ---
+const CRDExplorerView = ({ crds, selectedCRD, schemaData, loading, onSelectCRD }) => {
+  return (
+    <div>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-white tracking-tight">CRDs Introspectées & Schémas OpenAPI v3</h2>
+        <p className="text-gray-400 text-sm mt-1">Schémas extraits dynamiquement depuis Kubernetes pour alimenter les formulaires de configuration</p>
+      </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Liste des CRDs */}
+        <div className="bg-gray-900 border border-gray-800 rounded-2xl p-4 h-[75vh] flex flex-col">
+          <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 px-2">Ressources Détectées ({crds.length})</h3>
+          <div className="flex-1 overflow-y-auto space-y-1 pr-1">
+            {crds.map(c => (
+              <button
+                key={c.name}
+                onClick={() => onSelectCRD(c.name)}
+                className={`w-full text-left p-3 rounded-xl transition text-xs flex flex-col ${
+                  selectedCRD === c.name
+                    ? 'bg-blue-600/20 border border-blue-500/40 text-blue-300'
+                    : 'hover:bg-gray-800/60 text-gray-300 border border-transparent'
+                }`}
+              >
+                <div className="flex justify-between items-center mb-1">
+                  <span className="font-bold text-white">{c.kind}</span>
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-gray-800 text-gray-400">{c.provider}</span>
+                </div>
+                <span className="text-[10px] text-gray-500 truncate">{c.name}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Détail du schéma sélectionné */}
+        <div className="lg:col-span-2 bg-gray-900 border border-gray-800 rounded-2xl p-6 h-[75vh] flex flex-col">
+          {loading ? (
+            <div className="flex-1 flex items-center justify-center text-gray-500 text-sm">Chargement du schéma OpenAPI v3...</div>
+          ) : schemaData ? (
+            <div className="flex-1 flex flex-col overflow-hidden">
+              <div className="pb-4 border-b border-gray-800 mb-4 flex justify-between items-start">
+                <div>
+                  <h3 className="text-lg font-bold text-white">{schemaData.kind}</h3>
+                  <p className="text-xs text-blue-400 font-mono mt-0.5">apiVersion: {schemaData.apiVersion}</p>
+                </div>
+                <span className="text-xs px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  Sous-schéma .spec normalisé
+                </span>
+              </div>
+
+              {/* Aperçu des propriétés configurables */}
+              <div className="flex-1 overflow-y-auto space-y-4 pr-2">
+                <div className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Champs de configuration détectés :</div>
+                {schemaData.schema?.properties ? (
+                  Object.entries(schemaData.schema.properties).map(([field, def]) => (
+                    <div key={field} className="bg-gray-950 p-4 rounded-xl border border-gray-800/80">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-sm font-bold text-white">{field}</span>
+                        <div className="flex space-x-2 items-center">
+                          <span className="text-[10px] px-2 py-0.5 bg-gray-800 rounded text-purple-400 font-mono">
+                            {def.type || 'object'}
+                          </span>
+                          {schemaData.schema.required?.includes(field) && (
+                            <span className="text-[10px] px-2 py-0.5 bg-red-950/60 text-red-400 rounded border border-red-800/40">
+                              Requis
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-1 leading-relaxed">{def.description || 'Aucune description disponible.'}</p>
+                      {def.enum && (
+                        <div className="mt-2 text-xs text-gray-500 flex items-center space-x-1">
+                          <span className="text-gray-400">Valeurs autorisées :</span>
+                          <span className="font-mono text-blue-400">{def.enum.join(', ')}</span>
+                        </div>
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <pre className="bg-black/60 p-4 rounded-xl text-xs font-mono text-green-400 overflow-x-auto">
+                    {JSON.stringify(schemaData.schema, null, 2)}
+                  </pre>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-gray-500 text-sm">
+              <span className="text-3xl mb-2">👈</span>
+              <span>Sélectionnez une CRD dans la liste pour inspecter son schéma de formulaire.</span>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// --- Vue 4: Liste des Clusters ---
+const ClusterListView = ({ clusters, onDelete }) => (
+  <div>
+    <div className="mb-6">
+      <h2 className="text-2xl font-bold text-white tracking-tight">Clusters Kubernetes Enfants</h2>
+      <p className="text-gray-400 text-sm mt-1">Clusters provisionnés et gérés via Cluster API</p>
+    </div>
+
+    {clusters.length === 0 ? (
+      <div className="bg-gray-900 border border-gray-800 rounded-2xl p-12 text-center text-gray-500">
+        <span className="text-4xl block mb-3">☸️</span>
+        <p className="text-base font-medium text-gray-400">Aucun cluster enfant déployé pour l'instant.</p>
+        <p className="text-xs text-gray-500 mt-1">Installez un provider d'infrastructure pour provisionner votre premier cluster.</p>
+      </div>
+    ) : (
+      <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-xl">
+        <table className="min-w-full divide-y divide-gray-800 text-left text-sm">
+          <thead className="bg-gray-950 text-gray-400 text-xs uppercase tracking-wider font-semibold">
+            <tr>
+              <th className="px-6 py-4">Nom du Cluster</th>
+              <th className="px-6 py-4">Statut</th>
+              <th className="px-6 py-4">Infrastructure</th>
+              <th className="px-6 py-4">Version K8s</th>
+              <th className="px-6 py-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-800/80 text-gray-300">
+            {clusters.map(c => (
+              <tr key={c.id} className="hover:bg-gray-800/40 transition">
+                <td className="px-6 py-4 font-bold text-white">{c.name}</td>
+                <td className="px-6 py-4">
+                  <span className="inline-flex items-center space-x-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+                    <span>{c.status}</span>
+                  </span>
+                </td>
+                <td className="px-6 py-4 text-gray-400 font-mono text-xs">{c.infrastructureProvider}</td>
+                <td className="px-6 py-4 font-mono text-xs text-blue-400">{c.kubernetesVersion || 'N/A'}</td>
+                <td className="px-6 py-4 text-right">
+                  <button onClick={() => onDelete(c.id)} className="text-red-400 hover:text-red-300 font-medium text-xs">
+                    Supprimer
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+  </div>
+);

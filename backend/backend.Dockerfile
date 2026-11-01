@@ -28,6 +28,11 @@ FROM alpine:3.18
 # Définir le répertoire de travail
 WORKDIR /app
 
+RUN apk --no-cache add curl
+RUN curl -L https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.11.3/clusterctl-linux-amd64 -o clusterctl && \
+    chmod +x clusterctl && \
+    mv clusterctl /usr/local/bin/clusterctl
+
 # Copier le binaire compilé depuis l'étape "builder"
 COPY --from=builder /app/server .
 

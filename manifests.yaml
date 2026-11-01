@@ -1,11 +1,12 @@
 # --- Backend Deployment (Go API) ---
-# Crée 2 pods pour le serveur backend Go
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: capi-backend-deployment
+  # !! AJOUT: Déployer dans notre namespace
+  namespace: capi-dashboard-system
 spec:
-  replicas: 2
+  replicas: 1 # Commencer avec 1 pour le debug
   selector:
     matchLabels:
       app: capi-backend
@@ -14,37 +15,40 @@ spec:
       labels:
         app: capi-backend
     spec:
+      # !! AJOUT: Utiliser notre Service Account
+      serviceAccountName: capi-dashboard-sa
       containers:
       - name: backend
         # !! ATTENTION: Remplacez par le nom de VOTRE image !!
         image: smartdeploy/capimgr-backend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080 # Port sur lequel Go écoute
+        - containerPort: 8080 
 
 ---
 # --- Backend Service ---
-# Crée un service interne pour que le frontend (via l'Ingress)
-# puisse trouver les pods du backend.
 apiVersion: v1
 kind: Service
 metadata:
   name: capi-backend-service
+  # !! AJOUT: Dans notre namespace
+  namespace: capi-dashboard-system
 spec:
   selector:
     app: capi-backend
   ports:
   - protocol: TCP
-    port: 80 # Le service écoute sur le port 80
-    targetPort: 8080 # Et redirige vers le port 8080 des pods
+    port: 80 
+    targetPort: 8080 
 
 ---
 # --- Frontend Deployment (React + Nginx) ---
-# Crée 2 pods pour le serveur frontend Nginx
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: capi-frontend-deployment
+  # !! AJOUT: Déployer dans notre namespace
+  namespace: capi-dashboard-system
 spec:
   replicas: 2
   selector:
@@ -61,16 +65,16 @@ spec:
         image: smartdeploy/capimgr-frontend:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 80 # Port sur lequel Nginx écoute
+        - containerPort: 80 
 
 ---
 # --- Frontend Service ---
-# Crée un service interne pour que l'Ingress
-# puisse trouver les pods du frontend.
 apiVersion: v1
 kind: Service
 metadata:
   name: capi-frontend-service
+  # !! AJOUT: Dans notre namespace
+  namespace: capi-dashboard-system
 spec:
   selector:
     app: capi-frontend
@@ -81,37 +85,36 @@ spec:
 
 ---
 # --- Ingress (Porte d'entrée) ---
-# Gère tout le trafic entrant et le route.
-# C'est ici que la magie opère.
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: capi-ingress
+  # !! AJOUT: Dans notre namespace
+  namespace: capi-dashboard-system
   annotations:
-    # (Optionnel) Assurez-vous d'utiliser la bonne classe d'Ingress
-    # pour votre cluster (ex: "nginx", "gce", "alb")
     kubernetes.io/ingress.class: "nginx"
+    # !! CORRIGÉ: Suppression du rewrite-target qui n'est pas nécessaire
+    # avec les nouvelles règles de path.
 spec:
   rules:
   - host: capi.k8s.dive-in-it.com
     http:
       paths:
-      # Règle 1: Tout ce qui commence par /api
+      # Règle 1: Tout ce qui commence par /api/
       - path: /api
         pathType: Prefix
         backend:
           service:
-            # est routé vers le service backend
             name: capi-backend-service
             port:
               number: 80
       
-      # Règle 2: Tout le reste (le /)
+      # Règle 2: Tout le reste (le frontend)
+      # !! CORRIGÉ: Utilisation d'un path préfixe valide "/"
       - path: /
         pathType: Prefix
         backend:
           service:
-            # est routé vers le service frontend
             name: capi-frontend-service
             port:
               number: 80

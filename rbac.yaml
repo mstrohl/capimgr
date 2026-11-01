@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: capi-dashboard-system
+---
+# --- Service Account pour le Backend Dashboard ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: capi-dashboard-sa
+  namespace: capi-dashboard-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: capi-dashboard-role
+rules:
+- apiGroups: ["cluster.x-k8s.io"]
+  resources: ["clusters"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""] # API Core
+  resources: ["namespaces"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""] # API Core
+  resources: ["nodes"] 
+  verbs: ["get", "list", "watch"]
+# --- PERMISSIONS POUR LE BACKEND ---
+- apiGroups: ["apiextensions.k8s.io"]
+  resources: ["customresourcedefinitions"]
+  verbs: ["get", "list", "watch"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create", "delete"]
+- apiGroups: [""] # Pour la lecture des Pods et des Logs des Jobs d'installation/désinstallation
+  resources: ["pods", "pods/log", "secrets"]
+  verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: capi-dashboard-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: capi-dashboard-role
+subjects:
+- kind: ServiceAccount
+  name: capi-dashboard-sa
+  namespace: capi-dashboard-system
+
+# --- RBAC pour le Job d'installation clusterctl ---
+# Ce SA sera utilisé par les Jobs qui lancent 'clusterctl init'
+# Il a besoin de droits 'cluster-admin' pour installer les composants.
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: clusterctl-installer-sa
+  namespace: capi-dashboard-system
+  # ** CORRECTION APPLIQUÉE ICI **
+  # Forcer le montage du token pour que 'clusterctl' s'authentifie
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: clusterctl-installer-binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  # 'cluster-admin' est le rôle K8s intégré avec tous les droits.
+  name: cluster-admin 
+subjects:
+- kind: ServiceAccount
+  name: clusterctl-installer-sa
+  namespace: capi-dashboard-system

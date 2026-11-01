@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: clusterctl-config
+  namespace: capi-dashboard-system
+data:
+  # C'est la clé que nous montons en tant que fichier
+  clusterctl.yaml: |
+    # Fichier de configuration pour 'clusterctl init'
+    # Il dit à clusterctl où trouver les manifestes pour chaque provider
+    providers:
+      # Core
+      - name: "cluster-api"
+        url: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.7.0/core-components.yaml"
+        type: "CoreProvider"
+      
+      # Infrastructure
+      - name: "aws"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-aws/releases/download/v2.4.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "azure"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-azure/releases/download/v1.11.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "gcp"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-gcp/releases/download/v1.7.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "vsphere"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-vsphere/releases/download/v1.9.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "openstack"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-openstack/releases/download/v0.10.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "proxmox"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-proxmox/releases/download/v0.6.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "digitalocean"
+        url: "https://github.com/kubernetes-sigs/cluster-api-provider-digitalocean/releases/download/v0.9.1/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+      - name: "hetzner"
+        url: "https://github.com/syself/cluster-api-provider-hetzner/releases/download/v1.3.0/infrastructure-components.yaml"
+        type: "InfrastructureProvider"
+        
+      # Control Plane
+      - name: "kubeadm"
+        url: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.7.0/control-plane-components.yaml"
+        type: "ControlPlaneProvider"
+      - name: "talos"
+        url: "https://github.com/siderolabs/cluster-api-provider-talos/releases/download/v0.6.0/control-plane-components.yaml"
+        type: "ControlPlaneProvider"
+        
+      # Bootstrap
+      - name: "kubeadm-bootstrap"
+        url: "https://github.com/kubernetes-sigs/cluster-api/releases/download/v1.7.0/bootstrap-components.yaml"
+        type: "BootstrapProvider"
+      - name: "talos-bootstrap"
+        url: "https://github.com/siderolabs/cluster-api-provider-talos/releases/download/v0.6.0/bootstrap-components.yaml"
+        type: "BootstrapProvider"
