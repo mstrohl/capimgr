@@ -6,6 +6,8 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
+	"strings"
 	"testing"
 
 	corev1 "k8s.io/api/core/v1"
@@ -213,5 +215,64 @@ func TestProviderCommandsHonorVersionAndCRDPurge(t *testing.T) {
 		if deleteArgs[i] != wantDelete[i] {
 			t.Fatalf("delete args = %v, want %v", deleteArgs, wantDelete)
 		}
+	}
+}
+
+func TestBootstrapProviderAliases(t *testing.T) {
+	for _, test := range []struct {
+		id   string
+		name string
+	}{
+		{"talos-bootstrap", "talos"},
+		{"kubeadm-bootstrap", "kubeadm"},
+		{"custom-bootstrap", "custom-bootstrap"},
+	} {
+		t.Run(test.id, func(t *testing.T) {
+			install := getProviderInstallCommand("bootstrap", test.id, "v0.7.0-alpha.3")
+			if want := []string{"init", "--bootstrap", test.name + ":v0.7.0-alpha.3"}; !reflect.DeepEqual(install, want) {
+				t.Fatalf("install = %v, want %v", install, want)
+			}
+			remove := getProviderDeleteCommand("bootstrap", test.id, true)
+			if want := []string{"delete", "--bootstrap", test.name, "--include-crd"}; !reflect.DeepEqual(remove, want) {
+				t.Fatalf("delete = %v, want %v", remove, want)
+			}
+		})
+	}
+}
+
+func TestIPAMProviderCommands(t *testing.T) {
+	if got, want := getProviderInstallCommand("ipam", "in-cluster", "v1.1.1"), []string{"init", "--ipam", "in-cluster:v1.1.1"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("install = %v, want %v", got, want)
+	}
+	if got, want := getProviderDeleteCommand("ipam", "in-cluster", true), []string{"delete", "--ipam", "in-cluster", "--include-crd"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("delete = %v, want %v", got, want)
+	}
+}
+
+func TestParseClusterctlRepositoriesDistinguishesProviderTypes(t *testing.T) {
+	input := `NAME TYPE URL FILE
+	talos BootstrapProvider https://github.com/siderolabs/cluster-api-bootstrap-provider-talos/releases/latest/ bootstrap-components.yaml
+	talos ControlPlaneProvider https://github.com/siderolabs/cluster-api-control-plane-provider-talos/releases/latest/ control-plane-components.yaml
+	kubeadm BootstrapProvider https://github.com/kubernetes-sigs/cluster-api/releases/latest/ bootstrap-components.yaml
+	kubeadm ControlPlaneProvider https://github.com/kubernetes-sigs/cluster-api/releases/latest/ control-plane-components.yaml
+	custom-bootstrap BootstrapProvider https://example.com/releases/v1.0.0/ bootstrap-components.yaml
+	`
+	repositories, err := parseClusterctlRepositories(strings.NewReader(input))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for id, expected := range map[string]struct{ category, url string }{
+		"talos-bootstrap":   {"bootstrap", "https://github.com/siderolabs/cluster-api-bootstrap-provider-talos/releases/latest/"},
+		"talos":             {"controlplane", "https://github.com/siderolabs/cluster-api-control-plane-provider-talos/releases/latest/"},
+		"kubeadm-bootstrap": {"bootstrap", "https://github.com/kubernetes-sigs/cluster-api/releases/latest/"},
+		"kubeadm":           {"controlplane", "https://github.com/kubernetes-sigs/cluster-api/releases/latest/"},
+		"custom-bootstrap":  {"bootstrap", "https://example.com/releases/v1.0.0/"},
+	} {
+		if repositories[id]["category"] != expected.category || repositories[id]["url"] != expected.url {
+			t.Errorf("%s = %v", id, repositories[id])
+		}
+	}
+	if len(repositories) != 5 {
+		t.Fatalf("got %d repositories, want 5: %v", len(repositories), repositories)
 	}
 }

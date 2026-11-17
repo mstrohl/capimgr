@@ -248,6 +248,7 @@ func detectProviderFromCRD(crdName, group, kind string, labels, annotations map[
 		p = strings.TrimPrefix(p, "control-plane-")
 		p = strings.TrimPrefix(p, "bootstrap-")
 		p = strings.TrimPrefix(p, "core-")
+		p = strings.TrimPrefix(p, "ipam-")
 		return p
 	}
 

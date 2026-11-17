@@ -23,7 +23,7 @@ go vet ./...
 ```sh
 cd frontend
 npm ci
-node --test src/locale.test.js src/providerLogos.test.js
+node --test src/*.test.js
 npm run build
 ```
 

@@ -52,6 +52,14 @@ func TestDetectProviderFromCRD(t *testing.T) {
 			expected: "kubeadm-bootstrap",
 		},
 		{
+			name:     "IPAM provider label",
+			crdName:  "inclusterippools.ipam.cluster.x-k8s.io",
+			group:    "ipam.cluster.x-k8s.io",
+			kind:     "InClusterIPPool",
+			labels:   map[string]string{"cluster.x-k8s.io/provider": "ipam-in-cluster"},
+			expected: "in-cluster",
+		},
+		{
 			name:    "Override via label",
 			crdName: "customclusters.infra.custom.io",
 			group:   "infra.custom.io",

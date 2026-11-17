@@ -39,7 +39,7 @@ jobs:
         run: npm ci
       - name: Test
         working-directory: frontend
-        run: node --test src/locale.test.js src/providerLogos.test.js
+        run: node --test src/*.test.js
       - name: Build
         working-directory: frontend
         run: npm run build

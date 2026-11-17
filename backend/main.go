@@ -942,18 +942,36 @@ func getClusterctlRepositories() (map[string]map[string]string, error) {
 		return nil, fmt.Errorf("erreur lors de l'exécution de clusterctl: %v, stderr: %s", err, stderr.String())
 	}
 
+	return parseClusterctlRepositories(&out)
+}
+
+func catalogProviderID(name, category string) string {
+	if category == "bootstrap" && (name == "talos" || name == "kubeadm") {
+		return name + "-bootstrap"
+	}
+	return name
+}
+
+func clusterctlProviderID(id, category string) string {
+	if category == "bootstrap" && (id == "talos-bootstrap" || id == "kubeadm-bootstrap") {
+		return strings.TrimSuffix(id, "-bootstrap")
+	}
+	return id
+}
+
+func parseClusterctlRepositories(output io.Reader) (map[string]map[string]string, error) {
 	repoMap := make(map[string]map[string]string)
-	scanner := bufio.NewScanner(&out)
+	scanner := bufio.NewScanner(output)
 	scanner.Scan() // Skip header
 	for scanner.Scan() {
 		fields := strings.Fields(scanner.Text())
 		// S'attend à une sortie comme: NAME  TYPE  URL  FILE
 		if len(fields) >= 3 {
-			id := fields[0]
 			provType := fields[1]
 			url := fields[2]
 			version := extractVersionFromURL(url)
 			category := typeToCategory(provType)
+			id := catalogProviderID(fields[0], category)
 
 			repoMap[id] = map[string]string{
 				"url":      url,
@@ -1103,7 +1121,7 @@ func createProvider(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	switch payload.Category {
-	case "infrastructure", "controlplane", "bootstrap", "core":
+	case "infrastructure", "controlplane", "bootstrap", "core", "ipam":
 	default:
 		http.Error(w, "Catégorie de provider invalide", http.StatusBadRequest)
 		return
@@ -1417,12 +1435,14 @@ func getProviderDeleteCommand(category string, providerID string, includeCRD boo
 		flag = "--bootstrap"
 	case "core":
 		flag = "--core"
+	case "ipam":
+		flag = "--ipam"
 	default:
 		return nil // Catégorie non supportée
 	}
 
 	// La commande de base
-	cmd := []string{"delete", flag, providerID}
+	cmd := []string{"delete", flag, clusterctlProviderID(providerID, category)}
 
 	// NOUVEAU: Ajouter le flag si demandé
 	if includeCRD {
@@ -1444,11 +1464,14 @@ func getProviderInstallCommand(category string, providerID string, version strin
 		flag = "--bootstrap"
 	case "core":
 		flag = "--core"
+	case "ipam":
+		flag = "--ipam"
 	default:
 		return nil // Catégorie non supportée
 	}
 	// Construit la commande avec l'ID et la version résolue
 	// FIXÉ: chaque argument doit être un élément séparé du slice (pas une seule string "init -n ...")
+	providerID = clusterctlProviderID(providerID, category)
 	if version == "" || version == "latest" {
 		return []string{"init", flag, providerID}
 	}

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { dump as dumpYaml, load as loadYaml } from 'js-yaml';
 import { getProviderLogo } from './providerLogos';
+import { filterProviders } from './providerFilter';
 import awsLogo from './assets/provider-logos/aws.svg';
 import azureLogo from './assets/provider-logos/azure.svg';
 import { useLanguage } from './LanguageContext';
@@ -462,6 +463,7 @@ const StatCard = ({ title, value, subtitle, icon, onClick }) => (
 const ProviderCatalogView = ({ providers, apiUrl, onInstall, onDelete, onRefresh }) => {
   const { t, language } = useLanguage();
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [search, setSearch] = useState('');
   const [installingProvider, setInstallingProvider] = useState(null);
   const [customVersion, setCustomVersion] = useState('');
   const [versionInfo, setVersionInfo] = useState({ loading: false, versions: [], error: '' });
@@ -488,16 +490,13 @@ const ProviderCatalogView = ({ providers, apiUrl, onInstall, onDelete, onRefresh
     { id: 'infrastructure', label: 'Infrastructure' },
     { id: 'controlplane', label: 'Control Plane' },
     { id: 'bootstrap', label: 'Bootstrap' },
+    { id: 'ipam', label: 'IPAM' },
     { id: 'core', label: 'Core' },
     { id: 'archived', label: t('Archived', 'Archivés') }
   ];
 
   const isArchived = (p) => p.status === 'archived';
-  const filtered = providers.filter(p => {
-    if (selectedCategory === 'archived') return isArchived(p);
-    if (selectedCategory === 'all') return true;
-    return p.category === selectedCategory && !isArchived(p);
-  });
+  const filtered = filterProviders(providers, selectedCategory, search);
 
   return (
     <div>
@@ -511,6 +510,11 @@ const ProviderCatalogView = ({ providers, apiUrl, onInstall, onDelete, onRefresh
           <span>{t('Refresh', 'Actualiser')}</span>
         </button>
       </div>
+
+      <label className="block mb-4 text-xs text-gray-400">
+        {t('Search providers', 'Rechercher des providers')}
+        <input type="search" value={search} onChange={(event) => setSearch(event.target.value)} placeholder={t('Name or identifier', 'Nom ou identifiant')} className="mt-1 w-full max-w-sm rounded-lg border border-gray-700 bg-gray-950 px-3 py-2 text-sm text-white" />
+      </label>
 
       {/* Filtres par catégorie */}
       <div className="flex space-x-2 mb-6 overflow-x-auto pb-2">
@@ -528,6 +532,8 @@ const ProviderCatalogView = ({ providers, apiUrl, onInstall, onDelete, onRefresh
           </button>
         ))}
       </div>
+
+      {filtered.length === 0 && <p className="mb-4 text-sm text-gray-400">{t('No providers match your filters.', 'Aucun provider ne correspond aux filtres.')}</p>}
 
       {/* Grille des cartes de providers */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

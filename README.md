@@ -43,6 +43,7 @@ The dashboard summarizes installed providers, discovered CRDs, and workload clus
 ### Provider catalog
 
 Filter providers by category, inspect their status, and start installation or removal.
+Use the search field to filter by provider name or identifier; the IPAM category includes IP address management providers.
 Known logos are bundled locally from [Simple Icons](https://simpleicons.org/) (CC0) and [Devicon](https://devicon.dev/) (MIT); trademarks remain the property of their owners. A generic blue icon is displayed when no logo is associated with a provider.
 
 ![Cluster API provider catalog](./docs/screenshots/providers.png)
@@ -108,6 +109,8 @@ The backend uses the current `kubectl` context (or `KUBECONFIG`). For a deployme
    ```
 
    The backend uses this command to discover providers and default versions. Official providers are known to `clusterctl`; versions and statuses are discovered using the GitHub API and cached for 30 minutes. The unauthenticated API is limited to 60 requests per hour, so `GITHUB_TOKEN` is recommended (`make deploy GITHUB_TOKEN=...`). The Helm chart's ConfigMap is disabled by default and is only needed for custom providers. [`deploy/legacy/clusterctl-configmap.yaml`](./deploy/legacy/clusterctl-configmap.yaml) is a legacy example; review and update its provider versions before using it.
+
+   The catalog distinguishes the bootstrap providers as `talos-bootstrap` and `kubeadm-bootstrap`, while their `clusterctl` names are both `talos` and `kubeadm`, respectively. Select mutually compatible CAPI, bootstrap, control-plane, and infrastructure provider versions before installing; an available release is not necessarily compatible with the installed management cluster.
 
    [`deploy/legacy/manifests.yaml`](./deploy/legacy/manifests.yaml) is an older standalone deployment and is not maintained alongside the Helm chart. Use the Helm deployment below for a current installation.
 

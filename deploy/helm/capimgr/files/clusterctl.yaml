@@ -41,9 +41,9 @@ providers:
     type: "ControlPlaneProvider"
     
   # Bootstrap
-  - name: "kubeadm-bootstrap"
+  - name: "kubeadm"
     url: "https://github.com/kubernetes-sigs/cluster-api/releases/v1.11.3/bootstrap-components.yaml"
     type: "BootstrapProvider"
-  - name: "talos-bootstrap"
+  - name: "talos"
     url: "https://github.com/siderolabs/cluster-api-bootstrap-provider-talos/releases/v0.6.13/bootstrap-components.yaml"
     type: "BootstrapProvider"
